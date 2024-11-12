@@ -2152,22 +2152,19 @@ function EndRoutineBegin(snapshot) {
     
     // Send data to OSF via DataPipe
     console.log('Saving data...');
-    fetch('https://pipe.jspsych.org/api/data', {
+    fetch('https://script.google.com/macros/s/AKfycbznPk1nJB5w24uxE3w-Rwa_ZdU-aYYLqAJNqL_36-OjlvcDL-AohwvRqJ43AFj1lQwg/exec', {  // Replace with your Google Apps Script URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Accept: '*/*',
         },
         body: JSON.stringify({
-            experimentID: 'VgIiMiyNwW6P', // ⭑ UPDATE WITH YOUR DATAPIPE EXPERIMENT ID ⭑
             filename: filename,
             data: data,
         }),
-    }).then(response => response.json()).then(data => {
-        // Log response and force experiment end
-        console.log(data);
+    }).then(response => response.text()).then(result => {
+        console.log(result);
         quitPsychoJS();
-    })
+    });
     psychoJS.experiment.addData('End.started', globalClock.getTime());
     EndMaxDuration = null
     // keep track of which components have finished
