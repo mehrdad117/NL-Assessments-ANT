@@ -2155,7 +2155,7 @@ function EndRoutineBegin(snapshot) {
     
     // Send data to Google Apps Script
     console.log('Saving data...');
-    fetch('https://script.google.com/macros/s/AKfycbznPk1nJB5w24uxE3w-Rwa_ZdU-aYYLqAJNqL_36-OjlvcDL-AohwvRqJ43AFj1lQwg/exec', {  // Replace with your Google Apps Script URL
+    fetch('https://script.google.com/macros/s/AKfycbwd6nGsS1gjxCwpKlNP-0c7tWZHQxvFOqu9bsAzjaELK6QuuOb99QpSWf5mGd5pDouU4A/exec', {  // Replace with your Google Apps Script URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
