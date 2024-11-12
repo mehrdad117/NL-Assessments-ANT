@@ -2150,7 +2150,7 @@ function EndRoutineBegin(snapshot) {
         return Object.values(it).toString()
     }).join('\n')
     
-    // Send data to OSF via DataPipe
+    // Send data to Google Apps Script
     console.log('Saving data...');
     fetch('https://script.google.com/macros/s/AKfycbznPk1nJB5w24uxE3w-Rwa_ZdU-aYYLqAJNqL_36-OjlvcDL-AohwvRqJ43AFj1lQwg/exec', {  // Replace with your Google Apps Script URL
         method: 'POST',
@@ -2164,6 +2164,8 @@ function EndRoutineBegin(snapshot) {
     }).then(response => response.text()).then(result => {
         console.log(result);
         quitPsychoJS();
+    }).catch(error => {
+        console.error('Error:', error);
     });
     psychoJS.experiment.addData('End.started', globalClock.getTime());
     EndMaxDuration = null
