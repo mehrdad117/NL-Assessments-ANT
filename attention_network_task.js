@@ -171,6 +171,7 @@ var trial_counter_3;
 var reminder_3;
 var inst3Clock;
 var text_22;
+var key_resp;
 var fix2Clock;
 var image_2;
 var trialsbClock;
@@ -507,7 +508,7 @@ async function experimentInit() {
   text_22 = new visual.TextStim({
     win: psychoJS.window,
     name: 'text_22',
-    text: 'بخش تمرینی به اتمام رسید. وارد مراحل اصلی میشوید. لطفا بر اساس دستورالعمل های پیشین پیش بروید. در این مراحل بازخوردی به شما داده نمیشود.',
+    text: 'بخش تمرینی به اتمام رسید. وارد مراحل اصلی میشوید. لطفا بر اساس دستورالعمل های پیشین پیش بروید. در این مراحل بازخوردی به شما داده نمیشود.\n\nلطفا کلید فاصله (space) را فشار دهید',
     font: 'Arial',
     units: undefined, 
     pos: [0, 0], draggable: false, height: 0.05,  wrapWidth: undefined, ori: 0.0,
@@ -515,6 +516,8 @@ async function experimentInit() {
     color: new util.Color('white'),  opacity: undefined,
     depth: 0.0 
   });
+  
+  key_resp = new core.Keyboard({psychoJS: psychoJS, clock: new util.Clock(), waitForStart: true});
   
   // Initialize components for Routine "fix2"
   fix2Clock = new util.Clock();
@@ -1639,6 +1642,7 @@ function feedbackRoutineEnd(snapshot) {
 
 
 var inst3MaxDurationReached;
+var _key_resp_allKeys;
 var inst3MaxDuration;
 var inst3Components;
 function inst3RoutineBegin(snapshot) {
@@ -1649,15 +1653,19 @@ function inst3RoutineBegin(snapshot) {
     t = 0;
     frameN = -1;
     continueRoutine = true; // until we're told otherwise
-    inst3Clock.reset(routineTimer.getTime());
-    routineTimer.add(1.000000);
+    inst3Clock.reset();
+    routineTimer.reset();
     inst3MaxDurationReached = false;
     // update component parameters for each repeat
+    key_resp.keys = undefined;
+    key_resp.rt = undefined;
+    _key_resp_allKeys = [];
     psychoJS.experiment.addData('inst3.started', globalClock.getTime());
     inst3MaxDuration = null
     // keep track of which components have finished
     inst3Components = [];
     inst3Components.push(text_22);
+    inst3Components.push(key_resp);
     
     for (const thisComponent of inst3Components)
       if ('status' in thisComponent)
@@ -1689,6 +1697,31 @@ function inst3RoutineEachFrame() {
       text_22.setAutoDraw(false);
     }
     
+    
+    // *key_resp* updates
+    if (t >= 0.0 && key_resp.status === PsychoJS.Status.NOT_STARTED) {
+      // keep track of start time/frame for later
+      key_resp.tStart = t;  // (not accounting for frame time here)
+      key_resp.frameNStart = frameN;  // exact frame index
+      
+      // keyboard checking is just starting
+      psychoJS.window.callOnFlip(function() { key_resp.clock.reset(); });  // t=0 on next screen flip
+      psychoJS.window.callOnFlip(function() { key_resp.start(); }); // start on screen flip
+      psychoJS.window.callOnFlip(function() { key_resp.clearEvents(); });
+    }
+    
+    if (key_resp.status === PsychoJS.Status.STARTED) {
+      let theseKeys = key_resp.getKeys({keyList: ['space'], waitRelease: false});
+      _key_resp_allKeys = _key_resp_allKeys.concat(theseKeys);
+      if (_key_resp_allKeys.length > 0) {
+        key_resp.keys = _key_resp_allKeys[_key_resp_allKeys.length - 1].name;  // just the last key pressed
+        key_resp.rt = _key_resp_allKeys[_key_resp_allKeys.length - 1].rt;
+        key_resp.duration = _key_resp_allKeys[_key_resp_allKeys.length - 1].duration;
+        // a response ends the routine
+        continueRoutine = false;
+      }
+    }
+    
     // check for quit (typically the Esc key)
     if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
@@ -1707,7 +1740,7 @@ function inst3RoutineEachFrame() {
       }
     
     // refresh the screen if continuing
-    if (continueRoutine && routineTimer.getTime() > 0) {
+    if (continueRoutine) {
       return Scheduler.Event.FLIP_REPEAT;
     } else {
       return Scheduler.Event.NEXT;
@@ -1725,11 +1758,21 @@ function inst3RoutineEnd(snapshot) {
       }
     }
     psychoJS.experiment.addData('inst3.stopped', globalClock.getTime());
-    if (inst3MaxDurationReached) {
-        inst3Clock.add(inst3MaxDuration);
-    } else {
-        inst3Clock.add(1.000000);
+    // update the trial handler
+    if (currentLoop instanceof MultiStairHandler) {
+      currentLoop.addResponse(key_resp.corr, level);
     }
+    psychoJS.experiment.addData('key_resp.keys', key_resp.keys);
+    if (typeof key_resp.keys !== 'undefined') {  // we had a response
+        psychoJS.experiment.addData('key_resp.rt', key_resp.rt);
+        psychoJS.experiment.addData('key_resp.duration', key_resp.duration);
+        routineTimer.reset();
+        }
+    
+    key_resp.stop();
+    // the Routine "inst3" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset();
+    
     // Routines running outside a loop should always advance the datafile row
     if (currentLoop === psychoJS.experiment) {
       psychoJS.experiment.nextEntry(snapshot);
