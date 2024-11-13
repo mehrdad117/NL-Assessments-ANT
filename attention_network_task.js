@@ -2126,43 +2126,11 @@ function EndRoutineBegin(snapshot) {
     t = 0;
     frameN = -1;
     continueRoutine = true; // until we're told otherwise
-    EndClock.reset();
-    routineTimer.reset();
+    EndClock.reset(routineTimer.getTime());
+    routineTimer.add(1.000000);
     EndMaxDurationReached = false;
     // update component parameters for each repeat
     inst1textbox_3.setText('لطفا تا ذخیره نتایج صبر کنید...');
-    // Disable downloading results to browser
-    psychoJS._saveResults = 1; 
-    
-    // Generate filename for results
-    let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
-    
-    // Extract data object from experiment
-    let dataObj = psychoJS._experiment._trialsData;
-    
-    // Convert data object to CSV
-    let data = [Object.keys(dataObj[0])].concat(dataObj).map(it => {
-        return Object.values(it).toString()
-    }).join('\n')
-    
-    // Send data to OSF via DataPipe
-    console.log('Saving data...');
-    fetch('https://pipe.jspsych.org/api/data', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: '*/*',
-        },
-        body: JSON.stringify({
-            experimentID: 'VgIiMiyNwW6P', // ⭑ UPDATE WITH YOUR DATAPIPE EXPERIMENT ID ⭑
-            filename: filename,
-            data: data,
-        }),
-    }).then(response => response.json()).then(data => {
-        // Log response and force experiment end
-        console.log(data);
-        quitPsychoJS();
-    })
     psychoJS.experiment.addData('End.started', globalClock.getTime());
     EndMaxDuration = null
     // keep track of which components have finished
@@ -2194,6 +2162,11 @@ function EndRoutineEachFrame() {
       inst1textbox_3.setAutoDraw(true);
     }
     
+    frameRemains = 0.0 + 1 - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
+    if (inst1textbox_3.status === PsychoJS.Status.STARTED && t >= frameRemains) {
+      inst1textbox_3.setAutoDraw(false);
+    }
+    
     // check for quit (typically the Esc key)
     if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
@@ -2212,7 +2185,7 @@ function EndRoutineEachFrame() {
       }
     
     // refresh the screen if continuing
-    if (continueRoutine) {
+    if (continueRoutine && routineTimer.getTime() > 0) {
       return Scheduler.Event.FLIP_REPEAT;
     } else {
       return Scheduler.Event.NEXT;
@@ -2230,9 +2203,11 @@ function EndRoutineEnd(snapshot) {
       }
     }
     psychoJS.experiment.addData('End.stopped', globalClock.getTime());
-    // the Routine "End" was not non-slip safe, so reset the non-slip timer
-    routineTimer.reset();
-    
+    if (EndMaxDurationReached) {
+        EndClock.add(EndMaxDuration);
+    } else {
+        EndClock.add(1.000000);
+    }
     // Routines running outside a loop should always advance the datafile row
     if (currentLoop === psychoJS.experiment) {
       psychoJS.experiment.nextEntry(snapshot);
