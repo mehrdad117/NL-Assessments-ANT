@@ -2135,7 +2135,7 @@ function EndRoutineBegin(snapshot) {
     // update component parameters for each repeat
     inst1textbox_3.setText('لطفا تا ذخیره نتایج صبر کنید...');
     // Disable downloading results to browser
-    psychoJS._saveResults = 0; 
+    psychoJS._saveResults = 1; 
     
     // Generate filename for results
     let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
