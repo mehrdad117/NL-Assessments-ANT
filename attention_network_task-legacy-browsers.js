@@ -2134,52 +2134,6 @@ function EndRoutineBegin(snapshot) {
     EndMaxDurationReached = false;
     // update component parameters for each repeat
     inst1textbox_3.setText('لطفا تا ذخیره نتایج صبر کنید...');
-    // Disable downloading results to browser
-    psychoJS._saveResults = 0; 
-    
-    // Generate filename for results
-    let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
-    
-    // Extract data object from experiment
-    let dataObj = psychoJS._experiment._trialsData;
-    
-    // Convert data object to CSV
-    let data = [Object.keys(dataObj[0])].concat(dataObj).map(it => {
-        return Object.values(it).toString()
-    }).join('\n');
-    
-    // Prepare GitHub API details
-    let githubApiUrl = 'https://api.github.com/repos/mehrdad117/NL-Assessments-ANT/tree/main/data' + filename;
-    let githubToken = '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';  // Store securely, do not hard-code in production
-    
-    // Prepare file content for GitHub (base64 encoded)
-    let encodedData = btoa(data);
-    
-    // Create the request payload for GitHub API
-    let payload = {
-        message: "Add task output data",  // Commit message
-        content: encodedData,  // Base64-encoded content
-        branch: "main",  // Set your branch name if it's different
-    };
-    
-    // Send data to GitHub via API
-    console.log('Saving data to GitHub...');
-    fetch(githubApiUrl, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `token ${githubToken}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json',
-        },
-        body: JSON.stringify(payload),
-    }).then(response => response.json()).then(data => {
-        // Log response and force experiment end
-        console.log(data);
-        quitPsychoJS();
-    }).catch(error => {
-        console.error('Error saving data to GitHub:', error);
-    });
-    
     psychoJS.experiment.addData('End.started', globalClock.getTime());
     EndMaxDuration = null
     // keep track of which components have finished
