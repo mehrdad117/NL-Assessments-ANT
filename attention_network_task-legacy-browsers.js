@@ -162,8 +162,8 @@ var text;
 var trial_counter_3;
 var reminder_3;
 var inst3Clock;
-var text_22;
 var key_resp;
+var text_22;
 var fix2Clock;
 var image_2;
 var trialsbClock;
@@ -497,6 +497,8 @@ async function experimentInit() {
   
   // Initialize components for Routine "inst3"
   inst3Clock = new util.Clock();
+  key_resp = new core.Keyboard({psychoJS: psychoJS, clock: new util.Clock(), waitForStart: true});
+  
   text_22 = new visual.TextStim({
     win: psychoJS.window,
     name: 'text_22',
@@ -506,10 +508,8 @@ async function experimentInit() {
     pos: [0, 0], draggable: false, height: 0.05,  wrapWidth: undefined, ori: 0.0,
     languageStyle: 'Arabic',
     color: new util.Color('white'),  opacity: undefined,
-    depth: 0.0 
+    depth: -1.0 
   });
-  
-  key_resp = new core.Keyboard({psychoJS: psychoJS, clock: new util.Clock(), waitForStart: true});
   
   // Initialize components for Routine "fix2"
   fix2Clock = new util.Clock();
@@ -1664,8 +1664,8 @@ function inst3RoutineBegin(snapshot) {
     inst3MaxDuration = null
     // keep track of which components have finished
     inst3Components = [];
-    inst3Components.push(text_22);
     inst3Components.push(key_resp);
+    inst3Components.push(text_22);
     
     inst3Components.forEach( function(thisComponent) {
       if ('status' in thisComponent)
@@ -1683,21 +1683,6 @@ function inst3RoutineEachFrame() {
     t = inst3Clock.getTime();
     frameN = frameN + 1;// number of completed frames (so 0 is the first frame)
     // update/draw components on each frame
-    
-    // *text_22* updates
-    if (t >= 0.0 && text_22.status === PsychoJS.Status.NOT_STARTED) {
-      // keep track of start time/frame for later
-      text_22.tStart = t;  // (not accounting for frame time here)
-      text_22.frameNStart = frameN;  // exact frame index
-      
-      text_22.setAutoDraw(true);
-    }
-    
-    frameRemains = 0.0 + 1.0 - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
-    if (text_22.status === PsychoJS.Status.STARTED && t >= frameRemains) {
-      text_22.setAutoDraw(false);
-    }
-    
     
     // *key_resp* updates
     if (t >= 0.0 && key_resp.status === PsychoJS.Status.NOT_STARTED) {
@@ -1721,6 +1706,16 @@ function inst3RoutineEachFrame() {
         // a response ends the routine
         continueRoutine = false;
       }
+    }
+    
+    
+    // *text_22* updates
+    if (t >= 0.0 && text_22.status === PsychoJS.Status.NOT_STARTED) {
+      // keep track of start time/frame for later
+      text_22.tStart = t;  // (not accounting for frame time here)
+      text_22.frameNStart = frameN;  // exact frame index
+      
+      text_22.setAutoDraw(true);
     }
     
     // check for quit (typically the Esc key)
