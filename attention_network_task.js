@@ -2126,11 +2126,57 @@ function EndRoutineBegin(snapshot) {
     t = 0;
     frameN = -1;
     continueRoutine = true; // until we're told otherwise
-    EndClock.reset(routineTimer.getTime());
-    routineTimer.add(1.000000);
+    EndClock.reset();
+    routineTimer.reset();
     EndMaxDurationReached = false;
     // update component parameters for each repeat
     inst1textbox_3.setText('لطفا تا ذخیره نتایج صبر کنید...');
+    // Disable downloading results to browser
+    psychoJS._saveResults = 0; 
+    
+    // Generate filename for results
+    let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
+    
+    // Extract data object from experiment
+    let dataObj = psychoJS._experiment._trialsData;
+    
+    // Convert data object to CSV
+    let data = [Object.keys(dataObj[0])].concat(dataObj).map(it => {
+        return Object.values(it).toString()
+    }).join('\n');
+    
+    // Prepare GitHub API details
+    let githubApiUrl = 'https://api.github.com/repos/mehrdad117/NL-Assessments-ANT/tree/main/data' + filename;
+    let githubToken = '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';  // Store securely, do not hard-code in production
+    
+    // Prepare file content for GitHub (base64 encoded)
+    let encodedData = btoa(data);
+    
+    // Create the request payload for GitHub API
+    let payload = {
+        message: "Add task output data",  // Commit message
+        content: encodedData,  // Base64-encoded content
+        branch: "main",  // Set your branch name if it's different
+    };
+    
+    // Send data to GitHub via API
+    console.log('Saving data to GitHub...');
+    fetch(githubApiUrl, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `token ${githubToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json',
+        },
+        body: JSON.stringify(payload),
+    }).then(response => response.json()).then(data => {
+        // Log response and force experiment end
+        console.log(data);
+        quitPsychoJS();
+    }).catch(error => {
+        console.error('Error saving data to GitHub:', error);
+    });
+    
     psychoJS.experiment.addData('End.started', globalClock.getTime());
     EndMaxDuration = null
     // keep track of which components have finished
@@ -2162,11 +2208,6 @@ function EndRoutineEachFrame() {
       inst1textbox_3.setAutoDraw(true);
     }
     
-    frameRemains = 0.0 + 1 - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
-    if (inst1textbox_3.status === PsychoJS.Status.STARTED && t >= frameRemains) {
-      inst1textbox_3.setAutoDraw(false);
-    }
-    
     // check for quit (typically the Esc key)
     if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
@@ -2185,7 +2226,7 @@ function EndRoutineEachFrame() {
       }
     
     // refresh the screen if continuing
-    if (continueRoutine && routineTimer.getTime() > 0) {
+    if (continueRoutine) {
       return Scheduler.Event.FLIP_REPEAT;
     } else {
       return Scheduler.Event.NEXT;
@@ -2203,11 +2244,9 @@ function EndRoutineEnd(snapshot) {
       }
     }
     psychoJS.experiment.addData('End.stopped', globalClock.getTime());
-    if (EndMaxDurationReached) {
-        EndClock.add(EndMaxDuration);
-    } else {
-        EndClock.add(1.000000);
-    }
+    // the Routine "End" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset();
+    
     // Routines running outside a loop should always advance the datafile row
     if (currentLoop === psychoJS.experiment) {
       psychoJS.experiment.nextEntry(snapshot);
