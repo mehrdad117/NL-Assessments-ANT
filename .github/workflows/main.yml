@@ -11,15 +11,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'  # Specify the version of Node.js you need
-
-    - name: Install dependencies
-      run: |
-        npm install  # Install necessary dependencies if you have a package.json
-
     - name: Run ANT Task
       run: |
         node attention_network_task.js  # Run your ANT task script (adjust if necessary)
