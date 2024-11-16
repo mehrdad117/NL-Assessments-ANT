@@ -1,0 +1,40 @@
+name: Run ANT Task and Save Output
+
+on:
+  workflow_dispatch:  # Allows manual triggering from GitHub UI
+
+jobs:
+  run-task:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Specify the version of Node.js you need
+
+    - name: Install dependencies
+      run: |
+        npm install  # Install necessary dependencies if you have a package.json
+
+    - name: Run ANT Task
+      run: |
+        node attention_network_task.js  # Run your ANT task script (adjust if necessary)
+        mkdir -p data  # Create the 'data' directory if it doesn't exist
+        mv *.csv data/  # Move all .csv files to the 'data' folder
+
+    - name: List output files
+      run: ls -l data/  # List files in the 'data' folder to verify the output
+
+    - name: Commit and push results
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add data/  # Stage all files in the 'data' folder
+        git commit -m "Save task output in data folder"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # This is needed to push to the repository
