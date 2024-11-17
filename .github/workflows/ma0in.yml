@@ -1,4 +1,4 @@
-name: Run ANT Task and Save Output
+name: Run ANT Task and Save Output as Artifact
 
 on:
   workflow_dispatch:  # Allows manual triggering from GitHub UI
@@ -22,22 +22,8 @@ jobs:
         # Move all .csv files into the 'data' directory
         mv *.csv data/
       
-    - name: List output files
-      run: ls -l data/  # List files in the 'data' folder to verify the output
-
-    - name: Commit and push results
-      run: |
-        # Set up Git configuration
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        
-        # Stage the 'data/' folder for commit
-        git add data/  
-        
-        # Commit the changes with a message
-        git commit -m "Save task output in data folder"
-        
-        # Push the changes back to the repository
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # This is needed to push to the repository
+    - name: Upload output as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ant-task-output
+        path: data/*.csv  # Path to the .csv files you want to upload as artifact
