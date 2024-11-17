@@ -1,0 +1,9 @@
+{
+  "name": "nl-assessments-ant",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node attention_network_task.js"
+  }
+}
